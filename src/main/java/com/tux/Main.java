@@ -42,4 +42,25 @@ public class Main {
     public void deleteCustomer(@PathVariable("customerId") Integer id) {
         customerRepository.deleteById(id);
     }
+
+
+    public record UpdateCustomerRequest(String name, String email) {}
+
+    @PutMapping("{customerId}")
+    public void updateCustomer(
+            @PathVariable("customerId") Integer id,
+            @RequestBody UpdateCustomerRequest request
+    ) {
+        Customer customer = customerRepository.findById(id).orElseThrow(
+                () -> new IllegalStateException("Customer with id " + id + " does not exist")
+        );
+        if (request.name != null && !request.name.isEmpty()) {
+            customer.setName(request.name);
+        }
+        if (request.email != null && !request.email.isEmpty()) {
+            customer.setEmail(request.email);
+        }
+        customerRepository.save(customer);
+    }
+
 }
